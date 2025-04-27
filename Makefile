@@ -55,6 +55,11 @@ generate:
 	go generate ./...
 	go mod tidy
 
+.PHONY: run
+# run
+run:
+	kratos run
+
 .PHONY: all
 # generate all
 all:
