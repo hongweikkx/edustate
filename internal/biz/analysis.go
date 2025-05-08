@@ -4,8 +4,8 @@ import (
 	"context"
 	"edustate/internal/conf"
 	"edustate/pkg/eino"
-
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/spf13/cast"
 )
 
 type AnalysisUsecase struct {
@@ -23,9 +23,12 @@ func NewAnalysisUsecase(scoreRepo ScoreRepo, logger log.Logger, c *conf.LLM) *An
 }
 
 // Analyze 是核心业务逻辑：基于 studentID 查询成绩，并返回总结 + 建议
-func (uc *AnalysisUsecase) Analyze(ctx context.Context, studentID int64) (string, []string, error) {
-	eino.Client(uc.c)
-	scores, err := uc.scoreRepo.GetByStudentID(ctx, studentID)
+func (uc *AnalysisUsecase) Analyze(ctx context.Context, nlInputStr string) (string, []string, error) {
+	studentID, err := eino.NLToArgs(nlInputStr)
+	if err != nil {
+		return "", nil, err
+	}
+	scores, err := uc.scoreRepo.GetByStudentID(ctx, cast.ToInt64(studentID))
 	if err != nil {
 		return "", nil, err
 	}

@@ -19,11 +19,10 @@ func NewAnalysisService(uc *biz.AnalysisUsecase, logger log.Logger) *AnalysisSer
 }
 
 func (s *AnalysisService) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.AnalyzeReply, error) {
-	summary, suggestions, err := s.uc.Analyze(ctx, int64(len(req.StudentNlInput)))
+	summary, suggestions, err := s.uc.Analyze(ctx, req.GetStudentNlInput())
 	if err != nil {
 		return nil, err
 	}
-	s.log.WithContext(ctx).Infof("<UNK>: %v", summary)
 	return &pb.AnalyzeReply{
 		ResultSummary: summary,
 		Suggestions:   suggestions,

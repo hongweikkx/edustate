@@ -1,16 +1,17 @@
 package main
 
 import (
+	"edustate/pkg/eino"
 	"flag"
+	"io/ioutil"
+	"os"
+
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
-	"io/ioutil"
-	"os"
 
 	"edustate/internal/conf"
-
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -35,7 +36,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
+	flag.StringVar(&flagconf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -89,7 +90,9 @@ func main() {
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-
+	if err := eino.Init(log.NewHelper(logger), bc.Llm); err != nil {
+		panic(err)
+	}
 	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Llm, logger)
 	if err != nil {
 		panic(err)
