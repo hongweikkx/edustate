@@ -4,6 +4,7 @@ import (
 	"context"
 	"edustate/internal/biz"
 	"errors"
+
 	"github.com/go-kratos/kratos/v2/log"
 	"gorm.io/gorm"
 )
@@ -33,7 +34,7 @@ func (r *studentRepo) GetByStudentNumber(ctx context.Context, sn string) (*biz.S
 	var student biz.Student
 	err := r.data.db.WithContext(ctx).Where("student_number = ?", sn).First(&student).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Errorf("studentRepo.GetByStudentNumber err: %+v", err)
+		log.Context(ctx).Errorf("studentRepo.GetByStudentNumber err: %+v", err)
 	}
 	return &student, err
 }

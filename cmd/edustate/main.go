@@ -12,6 +12,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 
 	"edustate/internal/conf"
+
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
@@ -29,14 +30,14 @@ var (
 	Name = "edustate"
 	// Version is the version of the compiled software.
 	Version = "0.0.1"
-	// flagconf is the config flag.
-	flagconf string
+	// flagConf is the config flag.
+	flagConf string
 
 	id, _ = os.Hostname()
 )
 
 func init() {
-	flag.StringVar(&flagconf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
+	flag.StringVar(&flagConf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
 }
 
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
@@ -75,9 +76,10 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
+	log.SetLogger(logger)
 	c := config.New(
 		config.WithSource(
-			file.NewSource(flagconf),
+			file.NewSource(flagConf),
 		),
 	)
 	defer c.Close()
@@ -100,7 +102,7 @@ func main() {
 	defer cleanup()
 
 	// start and wait for stop signal
-	if err := app.Run(); err != nil {
+	if err = app.Run(); err != nil {
 		panic(err)
 	}
 }

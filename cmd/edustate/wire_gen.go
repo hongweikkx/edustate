@@ -28,9 +28,9 @@ func wireApp(confServer *conf.Server, confData *conf.Data, llm *conf.LLM, logger
 	if err != nil {
 		return nil, nil, err
 	}
-	scoreRepo := data.NewScoreRepo(dataData, logger)
-	analysisUsecase := biz.NewAnalysisUsecase(scoreRepo, logger, llm)
-	analysisService := service.NewAnalysisService(analysisUsecase, logger)
+	scoreRepo := data.NewScoreRepo(dataData)
+	analysisUsecase := biz.NewAnalysisUsecase(scoreRepo, llm)
+	analysisService := service.NewAnalysisService(analysisUsecase)
 	tracerProvider := NewTraceProvider()
 	grpcServer := server.NewGRPCServer(confServer, analysisService, tracerProvider, logger)
 	httpServer := server.NewHTTPServer(confServer, analysisService, tracerProvider, logger)

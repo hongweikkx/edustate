@@ -21,7 +21,7 @@ type LLM struct {
 	Log    *log.Helper
 }
 
-func Init(logger *log.Helper, conf *conf.LLM) error{
+func Init(logger *log.Helper, conf *conf.LLM) error {
 	chatModel, err := createArkChatModel(context.Background(), conf)
 	LLMClient = &LLM{
 		Client: chatModel,
@@ -78,7 +78,7 @@ func createArkChatModel(ctx context.Context, conf *conf.LLM) (model.ChatModel, e
 		Model:      conf.GetModel(),
 	})
 	if err != nil {
-		log.Infof("create openai chat model failed, err=%v", err)
+		log.Context(ctx).Infof("create openai chat model failed, err=%v", err)
 	}
 	return chatModel, err
 }
