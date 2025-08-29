@@ -2,16 +2,17 @@ package main
 
 import (
 	"edustate/pkg/eino"
+	"edustate/pkg/zaplog"
 	"flag"
 	"io/ioutil"
 	"os"
+
+	"edustate/internal/conf"
 
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
-
-	"edustate/internal/conf"
 
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/config"
@@ -67,7 +68,9 @@ func NewTraceProvider() trace.TracerProvider {
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
+	zapLogger := zaplog.InitLogger()
+	defer zapLogger.Close()
+	logger := log.With(zapLogger,
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 		"service.id", id,
