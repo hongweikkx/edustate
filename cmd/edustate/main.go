@@ -2,6 +2,7 @@ package main
 
 import (
 	"edustate/pkg/eino"
+	prometheus_metrics "edustate/pkg/prometheus"
 	"edustate/pkg/zaplog"
 	"flag"
 	"io/ioutil"
@@ -68,6 +69,7 @@ func NewTraceProvider() trace.TracerProvider {
 
 func main() {
 	flag.Parse()
+	// log
 	zapLogger := zaplog.InitLogger()
 	defer zapLogger.Close()
 	logger := log.With(zapLogger,
@@ -80,24 +82,29 @@ func main() {
 		"span.id", tracing.SpanID(),
 	)
 	log.SetLogger(logger)
+
+	// config
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagConf),
 		),
 	)
 	defer c.Close()
-
 	if err := c.Load(); err != nil {
 		panic(err)
 	}
-
 	var bc conf.Bootstrap
 	if err := c.Scan(&bc); err != nil {
 		panic(err)
 	}
-	if err := eino.Init(log.NewHelper(logger), bc.Llm); err != nil {
+
+	// eino
+	if err := eino.Init(bc.Llm); err != nil {
 		panic(err)
 	}
+	// metrics
+	prometheus_metrics.Init()
+
 	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Llm, logger)
 	if err != nil {
 		panic(err)

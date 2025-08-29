@@ -18,14 +18,12 @@ var LLMClient *LLM
 
 type LLM struct {
 	Client model.ChatModel
-	Log    *log.Helper
 }
 
-func Init(logger *log.Helper, conf *conf.LLM) error {
+func Init(conf *conf.LLM) error {
 	chatModel, err := createArkChatModel(context.Background(), conf)
 	LLMClient = &LLM{
 		Client: chatModel,
-		Log:    logger,
 	}
 	return err
 }
@@ -35,7 +33,7 @@ func (llm *LLM) NLToArgs(nlInputStr string) (string, error) {
 	messages := llm.createMessagesFromTemplate(nlInputStr)
 	result, err := llm.Client.Generate(ctx, messages)
 	if err != nil {
-		llm.Log.Error("generate err:", err)
+		log.Error("generate err:", err)
 		return "", err
 	}
 	// 解析 JSON 响应
@@ -59,7 +57,7 @@ func (llm *LLM) createMessagesFromTemplate(nlInputStr string) []*schema.Message 
 		"nlInputStr":   nlInputStr,
 	})
 	if err != nil {
-		log.Log(log.LevelError, "msg", "format template failed", "err", err)
+		log.Errorf("format template failed, err:%+v", err)
 		return nil
 	}
 	return messages
