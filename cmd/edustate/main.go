@@ -2,7 +2,7 @@ package main
 
 import (
 	"edustate/pkg/eino"
-	prometheus_metrics "edustate/pkg/prometheus"
+	prometheusmetrics "edustate/pkg/prometheus"
 	"edustate/pkg/zaplog"
 	"flag"
 	"io/ioutil"
@@ -38,10 +38,6 @@ var (
 	id, _ = os.Hostname()
 )
 
-func init() {
-	flag.StringVar(&flagConf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
-}
-
 func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
@@ -68,7 +64,6 @@ func NewTraceProvider() trace.TracerProvider {
 }
 
 func main() {
-	flag.Parse()
 	// log
 	zapLogger := zaplog.InitLogger()
 	defer zapLogger.Close()
@@ -84,6 +79,7 @@ func main() {
 	log.SetLogger(logger)
 
 	// config
+	flag.StringVar(&flagConf, "conf", "../../configs/config.yaml", "config path, eg: -conf config.yaml")
 	c := config.New(
 		config.WithSource(
 			file.NewSource(flagConf),
@@ -103,7 +99,7 @@ func main() {
 		panic(err)
 	}
 	// metrics
-	prometheus_metrics.Init()
+	prometheusmetrics.Init()
 
 	app, cleanup, err := wireApp(bc.Server, bc.Data, bc.Llm, logger)
 	if err != nil {

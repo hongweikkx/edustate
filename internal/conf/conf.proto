@@ -6,9 +6,10 @@ option go_package = "edustate/internal/conf;conf";
 import "google/protobuf/duration.proto";
 
 message Bootstrap {
-  Server server = 1;
-  Data data = 2;
-  LLM llm = 3;
+  string env = 1;
+  Server server = 2;
+  Data data = 3;
+  LLM llm = 4;
 }
 
 message Server {
@@ -32,10 +33,10 @@ message Data {
     string source = 2;
   }
   message Redis {
-    string network = 1;
-    string addr = 2;
-    google.protobuf.Duration read_timeout = 3;
-    google.protobuf.Duration write_timeout = 4;
+    string addr = 1;
+    string pw = 2;
+    int32 db = 3;
+    int64  warn_limit = 4;
   }
   Database database = 1;
   Redis redis = 2;
