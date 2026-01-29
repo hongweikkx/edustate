@@ -9,21 +9,21 @@ import (
 	"github.com/spf13/cast"
 )
 
-type AnalysisUsecase struct {
+type AnalysisUseCase struct {
 	scoreRepo ScoreRepo
 	c         *conf.LLM
 }
 
-func NewAnalysisUsecase(scoreRepo ScoreRepo, c *conf.LLM) *AnalysisUsecase {
-	return &AnalysisUsecase{
+func NewAnalysisUseCase(scoreRepo ScoreRepo, c *conf.LLM) *AnalysisUseCase {
+	return &AnalysisUseCase{
 		scoreRepo: scoreRepo,
 		c:         c,
 	}
 }
 
 // Analyze 是核心业务逻辑：基于 studentID 查询成绩，并返回总结 + 建议
-func (uc *AnalysisUsecase) Analyze(ctx context.Context, nlInputStr string) (string, []string, error) {
-	studentID, err := eino.LLMClient.NLToArgs(nlInputStr)
+func (uc *AnalysisUseCase) Analyze(ctx context.Context, nlInputStr string) (string, []string, error) {
+	studentID, err := eino.LLMClient.NLToArgs(ctx, nlInputStr)
 	if err != nil {
 		return "", nil, err
 	}

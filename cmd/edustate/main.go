@@ -5,7 +5,7 @@ import (
 	prometheusmetrics "edustate/pkg/prometheus"
 	"edustate/pkg/zaplog"
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"edustate/internal/conf"
@@ -53,7 +53,7 @@ func newApp(logger log.Logger, gs *grpc.Server, hs *http.Server) *kratos.App {
 }
 
 func NewTraceProvider() trace.TracerProvider {
-	exporter, err := stdouttrace.New(stdouttrace.WithWriter(ioutil.Discard))
+	exporter, err := stdouttrace.New(stdouttrace.WithWriter(io.Discard))
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +66,12 @@ func NewTraceProvider() trace.TracerProvider {
 func main() {
 	// log
 	zapLogger := zaplog.InitLogger()
-	defer zapLogger.Close()
+	defer func(zapLogger *zaplog.Logger) {
+		err := zapLogger.Close()
+		if err != nil {
+			log.Errorf("close zap logger error: %s", err)
+		}
+	}(zapLogger)
 	logger := log.With(zapLogger,
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
@@ -85,7 +90,12 @@ func main() {
 			file.NewSource(flagConf),
 		),
 	)
-	defer c.Close()
+	defer func(c config.Config) {
+		err := c.Close()
+		if err != nil {
+			log.Errorf("close config error, %s", err.Error())
+		}
+	}(c)
 	if err := c.Load(); err != nil {
 		panic(err)
 	}

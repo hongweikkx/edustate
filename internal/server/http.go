@@ -4,7 +4,7 @@ import (
 	v1 "edustate/api/edustate/v1"
 	"edustate/internal/conf"
 	"edustate/internal/service"
-	prometheus_metrics "edustate/pkg/prometheus"
+	prometheusmetrics "edustate/pkg/prometheus"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -26,8 +26,8 @@ func NewHTTPServer(c *conf.Server, analysis *service.AnalysisService, tp trace.T
 			logging.Server(logger),
 			validate.Validator(),
 			metrics.Server(
-				metrics.WithSeconds(prometheus_metrics.MetricSeconds),
-				metrics.WithRequests(prometheus_metrics.MetricRequests),
+				metrics.WithSeconds(prometheusmetrics.MetricSeconds),
+				metrics.WithRequests(prometheusmetrics.MetricRequests),
 			),
 		),
 	}

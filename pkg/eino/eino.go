@@ -28,12 +28,11 @@ func Init(conf *conf.LLM) error {
 	return err
 }
 
-func (llm *LLM) NLToArgs(nlInputStr string) (string, error) {
-	ctx := context.Background()
-	messages := llm.createMessagesFromTemplate(nlInputStr)
+func (llm *LLM) NLToArgs(ctx context.Context, nlInputStr string) (string, error) {
+	messages := llm.createMessagesFromTemplate(ctx, nlInputStr)
 	result, err := llm.Client.Generate(ctx, messages)
 	if err != nil {
-		log.Error("generate err:", err)
+		log.Context(ctx).Error("generate err:", err)
 		return "", err
 	}
 	// 解析 JSON 响应
@@ -46,7 +45,7 @@ func (llm *LLM) NLToArgs(nlInputStr string) (string, error) {
 	return response.StudentID, nil
 }
 
-func (llm *LLM) createMessagesFromTemplate(nlInputStr string) []*schema.Message {
+func (llm *LLM) createMessagesFromTemplate(ctx context.Context, nlInputStr string) []*schema.Message {
 	template := prompt.FromMessages(schema.FString,
 		schema.SystemMessage(`你是一个数据分析师。请从用户输入中提取学生的ID。请以JSON格式返回。`),
 		schema.MessagesPlaceholder("chat_history", false),
@@ -57,7 +56,7 @@ func (llm *LLM) createMessagesFromTemplate(nlInputStr string) []*schema.Message 
 		"nlInputStr":   nlInputStr,
 	})
 	if err != nil {
-		log.Errorf("format template failed, err:%+v", err)
+		log.Context(ctx).Errorf("format template failed, err:%+v", err)
 		return nil
 	}
 	return messages
@@ -76,7 +75,7 @@ func createArkChatModel(ctx context.Context, conf *conf.LLM) (model.ChatModel, e
 		Model:      conf.GetModel(),
 	})
 	if err != nil {
-		log.Context(ctx).Infof("create openai chat model failed, err=%v", err)
+		log.Context(ctx).Infof("create OpenAI chat model failed, err=%v", err)
 	}
 	return chatModel, err
 }

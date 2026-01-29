@@ -11,10 +11,10 @@ import (
 
 type AnalysisService struct {
 	pb.UnimplementedAnalysisServer
-	uc *biz.AnalysisUsecase
+	uc *biz.AnalysisUseCase
 }
 
-func NewAnalysisService(uc *biz.AnalysisUsecase) *AnalysisService {
+func NewAnalysisService(uc *biz.AnalysisUseCase) *AnalysisService {
 	return &AnalysisService{uc: uc}
 }
 

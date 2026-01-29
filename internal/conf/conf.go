@@ -1,6 +1,6 @@
 package conf
 
 const (
-	ENV_DEV  = "dev"
-	ENV_PROD = "prod"
+	EnvDev  = "dev"
+	EnvProd = "prod"
 )

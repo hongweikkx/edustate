@@ -29,8 +29,8 @@ func wireApp(confServer *conf.Server, confData *conf.Data, llm *conf.LLM, logger
 		return nil, nil, err
 	}
 	scoreRepo := data.NewScoreRepo(dataData)
-	analysisUsecase := biz.NewAnalysisUsecase(scoreRepo, llm)
-	analysisService := service.NewAnalysisService(analysisUsecase)
+	analysisUseCase := biz.NewAnalysisUseCase(scoreRepo, llm)
+	analysisService := service.NewAnalysisService(analysisUseCase)
 	tracerProvider := NewTraceProvider()
 	grpcServer := server.NewGRPCServer(confServer, analysisService, tracerProvider, logger)
 	httpServer := server.NewHTTPServer(confServer, analysisService, tracerProvider, logger)

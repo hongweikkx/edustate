@@ -57,7 +57,7 @@ func (rds *Client) Metric(ctx context.Context, start time.Time) {
 	}
 }
 
-func (rds *Client) ErrLog(ctx context.Context, err error, ignoreErr ...error) {
+func (rds *Client) ErrLog(_ context.Context, err error, ignoreErr ...error) {
 	if err != nil && !lo.Contains(ignoreErr, err) {
 		pc, file, line, _ := runtime.Caller(1)
 		log.Errorf("REDIS ERROR. err:%+v, function:%s, file:%s, line:%d", err, runtime.FuncForPC(pc).Name(), file, line)
